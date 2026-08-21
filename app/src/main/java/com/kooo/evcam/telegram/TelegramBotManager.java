@@ -56,7 +56,7 @@ public class TelegramBotManager {
          * @return 执行结果消息
          */
         default String onForegroundCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
         
         /**
@@ -64,7 +64,7 @@ public class TelegramBotManager {
          * @return 执行结果消息
          */
         default String onBackgroundCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
     }
 
@@ -260,7 +260,7 @@ public class TelegramBotManager {
                 AppLog.d(TAG, "收到录制指令，时长: " + durationSeconds + " 秒");
 
                 // 发送确认消息
-                String confirmMsg = String.format("收到录制指令，开始录制 %d 秒视频...", durationSeconds);
+                String confirmMsg = String.format("Record command received, starting %d sec recording...", durationSeconds);
                 sendResponseAndThen(chatId, confirmMsg, () -> {
                     // 使用 WakeUpHelper 唤醒并启动录制
                     AppLog.d(TAG, "使用 WakeUpHelper 启动录制...");
@@ -273,7 +273,7 @@ public class TelegramBotManager {
                 AppLog.d(TAG, "收到拍照指令");
 
                 // 发送确认消息
-                sendResponseAndThen(chatId, "收到拍照指令，正在拍照...", () -> {
+                sendResponseAndThen(chatId, "Photo command received, taking photo...", () -> {
                     // 使用 WakeUpHelper 唤醒并启动拍照
                     AppLog.d(TAG, "使用 WakeUpHelper 启动拍照...");
                     WakeUpHelper.launchForPhotoTelegram(context, chatId);
@@ -283,11 +283,11 @@ public class TelegramBotManager {
                 // 状态指令：显示应用详细状态
                 AppLog.d(TAG, "收到状态指令");
                 String statusInfo = currentCommandCallback != null ? 
-                        currentCommandCallback.getStatusInfo() : "✅ Bot 正在运行中";
+                        currentCommandCallback.getStatusInfo() : "✅ Bot is running";
                 apiClient.sendMessage(chatId, statusInfo);
 
             } else if ("启动录制".equals(command) || "开始录制".equals(command) || 
-                       "/start_rec".equals(command) || "start".equalsIgnoreCase(command)) {
+                       "/start_rec".equals(command) || "start".equalsIgnoreCase(command) || "start recording".equalsIgnoreCase(command)) {
                 // 启动录制指令：唤醒到前台并开始持续录制
                 AppLog.d(TAG, "收到启动录制指令");
                 if (currentCommandCallback != null) {
@@ -298,7 +298,7 @@ public class TelegramBotManager {
                 }
 
             } else if ("结束录制".equals(command) || "停止录制".equals(command) || 
-                       "/stop_rec".equals(command) || "stop".equalsIgnoreCase(command)) {
+                       "/stop_rec".equals(command) || "stop".equalsIgnoreCase(command) || "stop recording".equalsIgnoreCase(command)) {
                 // 结束录制指令：停止录制并退到后台
                 AppLog.d(TAG, "收到结束录制指令");
                 if (currentCommandCallback != null) {
@@ -313,11 +313,11 @@ public class TelegramBotManager {
                 // 退出指令：需要二次确认
                 AppLog.d(TAG, "收到退出指令（需二次确认）");
                 apiClient.sendMessage(chatId, 
-                    "⚠️ 确认要退出 EVCam 吗？\n\n" +
-                    "退出后将停止所有录制和远程服务。\n" +
-                    "发送「确认退出」或 /confirm_exit 执行退出操作。");
+                    "⚠️ Confirm exit EVCam?\n\n" +
+                    "All recording and remote services will be stopped.\n" +
+                    "Send \"confirm exit\" or /confirm_exit to proceed.");
 
-            } else if ("确认退出".equals(command) || "/confirm_exit".equals(command)) {
+            } else if ("确认退出".equals(command) || "/confirm_exit".equals(command) || "confirm exit".equalsIgnoreCase(command)) {
                 // 确认退出指令：执行退出
                 AppLog.d(TAG, "收到确认退出指令");
                 if (currentCommandCallback != null) {
@@ -353,34 +353,34 @@ public class TelegramBotManager {
                        "/start".equals(command)) {
 
                 apiClient.sendMessage(chatId,
-                    "📋 <b>EVCam 远程控制</b>\n" +
+                    "📋 <b>EVCam Remote Control</b>\n" +
                     "━━━━━━━━━━━━━━\n\n" +
-                    "📹 <b>远程录制</b>\n" +
-                    "/record ─ 录制60秒视频\n" +
-                    "/record 30 ─ 录制指定秒数\n" +
-                    "录制 / 录制30 ─ 中文指令\n\n" +
-                    "▶️ <b>持续录制</b>\n" +
-                    "/start_rec ─ 开始持续录制\n" +
-                    "/stop_rec ─ 停止录制\n" +
-                    "启动录制 / 结束录制 ─ 中文\n\n" +
-                    "📷 <b>拍照</b>\n" +
-                    "/photo ─ 拍摄照片\n" +
-                    "拍照 ─ 中文指令\n\n" +
-                    "🔄 <b>前后台切换</b>\n" +
-                    "/foreground ─ 切换到前台\n" +
-                    "/background ─ 切换到后台\n" +
-                    "前台 / 后台 ─ 中文指令\n\n" +
-                    "ℹ️ <b>其他</b>\n" +
-                    "/status ─ 查看应用状态\n" +
-                    "/exit ─ 退出应用\n" +
-                    "/help ─ 显示此帮助\n\n" +
+                    "📹 <b>Remote Recording</b>\n" +
+                    "/record ─ Record 60 sec video\n" +
+                    "/record 30 ─ Record specified seconds\n" +
+                    "'record' / 'record 30' ─ Chinese commands also supported\n\n" +
+                    "▶️ <b>Continuous Recording</b>\n" +
+                    "/start_rec ─ Start continuous recording\n" +
+                    "/stop_rec ─ Stop recording\n" +
+                    "'start recording' / 'stop recording' ─ Chinese\n\n" +
+                    "📷 <b>Photo</b>\n" +
+                    "/photo ─ Take a photo\n" +
+                    "'photo' ─ Chinese command\n\n" +
+                    "🔄 <b>Foreground/Background</b>\n" +
+                    "/foreground ─ Switch to foreground\n" +
+                    "/background ─ Switch to background\n" +
+                    "'foreground' / 'background' ─ Chinese\n\n" +
+                    "ℹ️ <b>Other</b>\n" +
+                    "/status ─ View app status\n" +
+                    "/exit ─ Exit app\n" +
+                    "/help ─ Show this help\n\n" +
                     "━━━━━━━━━━━━━━\n" +
-                    "💡 所有指令支持中英文");
+                    "💡 All commands support both Chinese and English");
 
             } else {
                 AppLog.d(TAG, "未识别的指令: " + command);
                 apiClient.sendMessage(chatId,
-                    "未识别的指令。发送 /help 查看可用指令。");
+                    "Unknown command. Send /help to see available commands.");
             }
 
         } catch (Exception e) {

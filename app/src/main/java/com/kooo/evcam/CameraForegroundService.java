@@ -202,10 +202,10 @@ public class CameraForegroundService extends Service {
         String content = intent != null ? intent.getStringExtra("content") : null;
 
         if (title == null) {
-            title = "摄像头服务运行中";
+            title = "Camera Service Running";
         }
         if (content == null) {
-            content = "正在处理远程拍照/录制请求";
+            content = "Processing remote photo/recording requests";
         }
 
         // 创建通知
@@ -329,7 +329,7 @@ public class CameraForegroundService extends Service {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 try {
                     AppLog.d(TAG, "执行延迟重启...");
-                    start(getApplicationContext(), "EVCam", "服务自动重启");
+                    start(getApplicationContext(), "EVCam", "Service auto-restart");
                 } catch (Exception e) {
                     AppLog.e(TAG, "延迟重启失败: " + e.getMessage(), e);
                 }
@@ -355,10 +355,10 @@ public class CameraForegroundService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "摄像头服务",
+                    "Camera Service",
                     NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("用于后台拍照和录制");
+            channel.setDescription("For background photo and recording");
             channel.setShowBadge(false);
 
             NotificationManager manager = getSystemService(NotificationManager.class);

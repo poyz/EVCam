@@ -113,10 +113,10 @@ public class StorageCleanupManager {
             CleanupResult videoResult = cleanupDirectory(
                 StorageHelper.getVideoDir(context),
                 videoLimitGb * GB_TO_BYTES,
-                "视频"
+                "video"
             );
             if (videoResult.deletedCount > 0) {
-                showCleanupNotification(videoResult, "视频");
+                showCleanupNotification(videoResult, "video");
             }
         }
         
@@ -125,10 +125,10 @@ public class StorageCleanupManager {
             CleanupResult photoResult = cleanupDirectory(
                 StorageHelper.getPhotoDir(context),
                 photoLimitGb * GB_TO_BYTES,
-                "图片"
+                "photo"
             );
             if (photoResult.deletedCount > 0) {
-                showCleanupNotification(photoResult, "图片");
+                showCleanupNotification(photoResult, "photo");
             }
         }
         
@@ -163,16 +163,16 @@ public class StorageCleanupManager {
         
         // 强制清理视频（删除20%的已用空间）
         File videoDir = StorageHelper.getVideoDir(context, false);
-        CleanupResult videoResult = cleanupByPercentage(videoDir, LOW_SPACE_CLEANUP_RATIO, "视频");
+        CleanupResult videoResult = cleanupByPercentage(videoDir, LOW_SPACE_CLEANUP_RATIO, "video");
         if (videoResult.deletedCount > 0) {
-            showLowSpaceCleanupNotification(videoResult, "视频");
+            showLowSpaceCleanupNotification(videoResult, "video");
         }
         
         // 强制清理图片（删除20%的已用空间）
         File photoDir = StorageHelper.getPhotoDir(context, false);
-        CleanupResult photoResult = cleanupByPercentage(photoDir, LOW_SPACE_CLEANUP_RATIO, "图片");
+        CleanupResult photoResult = cleanupByPercentage(photoDir, LOW_SPACE_CLEANUP_RATIO, "photo");
         if (photoResult.deletedCount > 0) {
-            showLowSpaceCleanupNotification(photoResult, "图片");
+            showLowSpaceCleanupNotification(photoResult, "photo");
         }
     }
     
@@ -249,8 +249,8 @@ public class StorageCleanupManager {
      */
     private void showLowSpaceCleanupNotification(CleanupResult result, String typeName) {
         mainHandler.post(() -> {
-            String message = "内部存储空间不足，已清理" + typeName + " " + 
-                    result.deletedCount + "个文件（" + StorageHelper.formatSize(result.deletedSize) + "）";
+            String message = "Low internal storage, cleaned " + typeName + " " + 
+                    result.deletedCount + " files (" + StorageHelper.formatSize(result.deletedSize) + ")";
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
         });
     }
@@ -342,7 +342,7 @@ public class StorageCleanupManager {
      */
     private void showCleanupNotification(CleanupResult result, String typeName) {
         mainHandler.post(() -> {
-            String message = "已清理" + typeName + "：删除 " + result.deletedCount + " 个文件，释放 " + 
+            String message = "Cleaned " + typeName + ": deleted " + result.deletedCount + " files, freed " + 
                     StorageHelper.formatSize(result.deletedSize);
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             AppLog.d(TAG, "清理通知: " + message);

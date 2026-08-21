@@ -19,8 +19,8 @@ import java.util.Map;
 import fi.iki.elonen.NanoHTTPD;
 
 /**
- * 文件传输 HTTP 服务器 - 使用 NanoHTTPD
- * 提供类似微信文件传输助手的扫码互传功能
+ * File Transfer HTTP 服务器 - 使用 NanoHTTPD
+ * 提供类似微信File Transfer助手的扫码互传功能
  */
 public class FileTransferServer extends NanoHTTPD {
     private static final String TAG = "FileTransferServer";
@@ -60,7 +60,7 @@ public class FileTransferServer extends NanoHTTPD {
         currentPort = getListeningPort();
         currentIp = getHotspotIpAddress();
         
-        AppLog.i(TAG, "文件传输服务器启动成功: " + currentIp + ":" + currentPort);
+        AppLog.i(TAG, "File Transfer服务器启动成功: " + currentIp + ":" + currentPort);
         
         if (callback != null) {
             String qrUrl = "http://" + currentIp + ":" + currentPort;
@@ -71,7 +71,7 @@ public class FileTransferServer extends NanoHTTPD {
     @Override
     public void stop() {
         super.stop();
-        AppLog.i(TAG, "文件传输服务器已停止");
+        AppLog.i(TAG, "File Transfer服务器已停止");
         if (callback != null) {
             callback.onServerStopped();
         }
@@ -112,7 +112,7 @@ public class FileTransferServer extends NanoHTTPD {
                 return serveBrowseRequest(path);
             }
 
-            // 下载文件
+            // Download文件
             if (uri.startsWith("/download/")) {
                 String fileId = uri.substring("/download/".length());
                 try {
@@ -158,7 +158,7 @@ public class FileTransferServer extends NanoHTTPD {
         html.append("<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\">\n");
         html.append("<meta http-equiv=\"Pragma\" content=\"no-cache\">\n");
         html.append("<meta http-equiv=\"Expires\" content=\"0\">\n");
-        html.append("<title>文件传输 - EVCam</title>\n");
+        html.append("<title>File Transfer - EVCam</title>\n");
         html.append(getMacOSStyles());
         html.append(getFileBrowserStyles());
         html.append(getCombinedScript());
@@ -169,7 +169,7 @@ public class FileTransferServer extends NanoHTTPD {
         html.append("<div id=\"wechat-tip\" class=\"wechat-tip\" style=\"display:none;\" onclick=\"this.style.display='none'\">\n");
         html.append("<div class=\"wechat-tip-content\">\n");
         html.append("<div class=\"wechat-tip-icon\">&#8599;</div>\n");
-        html.append("<div class=\"wechat-tip-text\">请点击右上角菜单<br>选择\"在浏览器打开\"以下载文件</div>\n");
+        html.append("<div class=\"wechat-tip-text\">Please tap the menu in the top right corner<br>and select \"Open in Browser\" to download files</div>\n");
         html.append("</div>\n");
         html.append("</div>\n");
 
@@ -183,19 +183,19 @@ public class FileTransferServer extends NanoHTTPD {
         html.append("<span class=\"light minimize\"></span>\n");
         html.append("<span class=\"light maximize\"></span>\n");
         html.append("</div>\n");
-        html.append("<div class=\"title\">文件传输</div>\n");
+        html.append("<div class=\"title\">File Transfer</div>\n");
         html.append("</div>\n");
 
         // 标签页切换
         html.append("<div class=\"tabs\">\n");
-        html.append("<div class=\"tab active\" onclick=\"switchTab('preset')\" id=\"tab-preset\">预设文件</div>\n");
-        html.append("<div class=\"tab\" onclick=\"switchTab('browser')\" id=\"tab-browser\">文件浏览</div>\n");
+        html.append("<div class=\"tab active\" onclick=\"switchTab('preset')\" id=\"tab-preset\">Preset Files</div>\n");
+        html.append("<div class=\"tab\" onclick=\"switchTab('browser')\" id=\"tab-browser\">File Browser</div>\n");
         html.append("</div>\n");
 
-        // 预设文件列表
+        // Preset Files列表
         html.append("<div class=\"tab-content\" id=\"content-preset\">\n");
         html.append("<div class=\"toolbar\">\n");
-        html.append("<span class=\"toolbar-item\">").append(pendingFiles.size()).append(" 个项目</span>\n");
+        html.append("<span class=\"toolbar-item\">").append(pendingFiles.size()).append(" items</span>\n");
         html.append("</div>\n");
         html.append("<div class=\"file-list\" id=\"preset-file-list\">\n");
 
@@ -225,7 +225,7 @@ public class FileTransferServer extends NanoHTTPD {
                     // 文件项容器
                     html.append("<div class=\"file-item\" style=\"display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #eee;\">\n");
 
-                    // 左侧文件信息（点击查看）
+                    // 左侧文件信息（点击View）
                     html.append("<div onclick=\"");
                     if (canPreview) {
                         html.append("previewPresetFile('").append(fileId).append("','").append(fileName.replace("'", "\\'")).append("')");
@@ -243,13 +243,13 @@ public class FileTransferServer extends NanoHTTPD {
                     // 右侧按钮区域
                     html.append("<div style=\"display:flex;gap:8px;\">\n");
 
-                    // 查看按钮（仅可预览的文件显示）
+                    // View按钮（仅可预览的文件显示）
                     if (canPreview) {
-                        html.append("<button onclick=\"event.stopPropagation();previewPresetFile('").append(fileId).append("','").append(fileName.replace("'", "\\'")).append("')\" style=\"padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">查看</button>\n");
+                        html.append("<button onclick=\"event.stopPropagation();previewPresetFile('").append(fileId).append("','").append(fileName.replace("'", "\\'")).append("')\" style=\"padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">View</button>\n");
                     }
 
-                    // 下载按钮
-                    html.append("<button onclick=\"event.stopPropagation();downloadPresetFile('").append(fileId).append("','").append(fileName.replace("'", "\\'")).append("')\" style=\"padding:6px 12px;background:#007aff;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">下载</button>\n");
+                    // Download按钮
+                    html.append("<button onclick=\"event.stopPropagation();downloadPresetFile('").append(fileId).append("','").append(fileName.replace("'", "\\'")).append("')\" style=\"padding:6px 12px;background:#007aff;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">Download</button>\n");
 
                     html.append("</div>\n"); // 按钮区域结束
                     html.append("</div>\n"); // 文件项结束
@@ -258,21 +258,21 @@ public class FileTransferServer extends NanoHTTPD {
         } else {
             html.append("<div class=\"empty-state\">\n");
             html.append("<div class=\"empty-icon\">&#128193;</div>\n");
-            html.append("<div class=\"empty-text\">暂无预设文件</div>\n");
+            html.append("<div class=\"empty-text\">No Preset Files</div>\n");
             html.append("</div>\n");
         }
 
         html.append("</div>\n"); // file-list
         html.append("</div>\n"); // tab-content preset
 
-        // 文件浏览器
+        // File Browser器
         html.append("<div class=\"tab-content\" id=\"content-browser\" style=\"display:none;\">\n");
         html.append("<div class=\"browser-toolbar\">\n");
-        html.append("<button class=\"btn-back\" onclick=\"goBack()\" id=\"btn-back\">&#8592; 返回</button>\n");
+        html.append("<button class=\"btn-back\" onclick=\"goBack()\" id=\"btn-back\">&#8592; Back</button>\n");
         html.append("<span class=\"current-path\" id=\"current-path\">/</span>\n");
         html.append("</div>\n");
         html.append("<div class=\"file-list\" id=\"browser-file-list\">\n");
-        html.append("<div class=\"loading\">加载中...</div>\n");
+        html.append("<div class=\"loading\">Loading...</div>\n");
         html.append("</div>\n"); // file-list
         html.append("</div>\n"); // tab-content browser
 
@@ -561,7 +561,7 @@ public class FileTransferServer extends NanoHTTPD {
             "\n" +
             "function loadDirectory(path) {\n" +
             "  var listEl = document.getElementById('browser-file-list');\n" +
-            "  listEl.innerHTML = '<div style=\"padding:40px;text-align:center;color:#999;\">加载中...</div>';\n" +
+            "  listEl.innerHTML = '<div style=\"padding:40px;text-align:center;color:#999;\">Loading...</div>';\n" +
             "  var xhr = new XMLHttpRequest();\n" +
             "  xhr.onreadystatechange = function() {\n" +
             "    if (xhr.readyState == 4) {\n" +
@@ -572,10 +572,10 @@ public class FileTransferServer extends NanoHTTPD {
             "          document.getElementById('current-path').innerHTML = data.path;\n" +
             "          renderItems(data.items);\n" +
             "        } else {\n" +
-            "          listEl.innerHTML = '<div style=\"padding:40px;text-align:center;\">加载失败</div>';\n" +
+            "          listEl.innerHTML = '<div style=\"padding:40px;text-align:center;\">Load failed</div>';\n" +
             "        }\n" +
             "      } else {\n" +
-            "        listEl.innerHTML = '<div style=\"padding:40px;text-align:center;\">错误: ' + xhr.status + '</div>';\n" +
+            "        listEl.innerHTML = '<div style=\"padding:40px;text-align:center;\">Error: ' + xhr.status + '</div>';\n" +
             "      }\n" +
             "    }\n" +
             "  };\n" +
@@ -586,7 +586,7 @@ public class FileTransferServer extends NanoHTTPD {
             "function renderItems(items) {\n" +
             "  var listEl = document.getElementById('browser-file-list');\n" +
             "  if (!items || items.length == 0) {\n" +
-            "    listEl.innerHTML = '<div style=\"padding:40px;text-align:center;\"><div style=\"font-size:48px;margin-bottom:12px;\">&#128193;</div><div style=\"color:#999;\">空文件夹</div></div>';\n" +
+            "    listEl.innerHTML = '<div style=\"padding:40px;text-align:center;\"><div style=\"font-size:48px;margin-bottom:12px;\">&#128193;</div><div style=\"color:#999;\">Empty folder</div></div>';\n" +
             "    return;\n" +
             "  }\n" +
             "  var html = '';\n" +
@@ -595,7 +595,7 @@ public class FileTransferServer extends NanoHTTPD {
             "    if (item.isDirectory) {\n" +
             "      html += '<div onclick=\"enterFolder(this.getAttribute(\\'data-path\\'))\" data-path=\"' + encodeURIComponent(item.path) + '\" style=\"display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #eee;cursor:pointer;\">';\n" +
             "      html += '<div style=\"width:40px;height:40px;background:#FFB800;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:12px;\">&#128194;</div>';\n" +
-            "      html += '<div style=\"flex:1;\"><div style=\"font-size:14px;color:#333;\">' + item.name + '</div><div style=\"font-size:12px;color:#888;margin-top:2px;\">文件夹</div></div>';\n" +
+            "      html += '<div style=\"flex:1;\"><div style=\"font-size:14px;color:#333;\">' + item.name + '</div><div style=\"font-size:12px;color:#888;margin-top:2px;\">Folder</div></div>';\n" +
             "      html += '<div style=\"font-size:20px;color:#999;\">&#8250;</div>';\n" +
             "      html += '</div>';\n" +
             "    } else {\n" +
@@ -617,9 +617,9 @@ public class FileTransferServer extends NanoHTTPD {
             "      html += '</div>';\n" +
             "      html += '<div style=\"display:flex;gap:8px;\">';\n" +
             "      if (canPreview) {\n" +
-            "        html += '<button onclick=\"event.stopPropagation();previewFile(\\'' + filePath + '\\',\\'' + fileName.replace(/\\'/g, \"\\\\'\") + '\\')\" style=\"padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">查看</button>';\n" +
+            "        html += '<button onclick=\"event.stopPropagation();previewFile(\\'' + filePath + '\\',\\'' + fileName.replace(/\\'/g, \"\\\\'\") + '\\')\" style=\"padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">View</button>';\n" +
             "      }\n" +
-            "      html += '<button onclick=\"event.stopPropagation();downloadDirect(\\'' + filePath + '\\',\\'' + fileName.replace(/\\'/g, \"\\\\'\") + '\\')\" style=\"padding:6px 12px;background:#007aff;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">下载</button>';\n" +
+            "      html += '<button onclick=\"event.stopPropagation();downloadDirect(\\'' + filePath + '\\',\\'' + fileName.replace(/\\'/g, \"\\\\'\") + '\\')\" style=\"padding:6px 12px;background:#007aff;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;\">Download</button>';\n" +
             "      html += '</div>';\n" +
             "      html += '</div>';\n" +
             "    }\n" +
@@ -627,7 +627,7 @@ public class FileTransferServer extends NanoHTTPD {
             "  listEl.innerHTML = html;\n" +
             "}\n" +
             "\n" +
-            "// 预设文件预览\n" +
+            "// Preset Files预览\n" +
             "function previewPresetFile(fileId, name) {\n" +
             "  var ext = name.split('.').pop().toLowerCase();\n" +
             "  var isImage = ['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext) >= 0;\n" +
@@ -654,7 +654,7 @@ public class FileTransferServer extends NanoHTTPD {
             "  document.body.appendChild(overlay);\n" +
             "}\n" +
             "\n" +
-            "// 预设文件下载\n" +
+            "// Preset FilesDownload\n" +
             "function downloadPresetFile(fileId, name) {\n" +
             "  var url = '/download/' + encodeURIComponent(fileId);\n" +
             "  if (!isWeixin()) {\n" +
@@ -680,7 +680,7 @@ public class FileTransferServer extends NanoHTTPD {
             "  xhr.send();\n" +
             "}\n" +
             "\n" +
-            "// 文件浏览器预览\n" +
+            "// File Browser器预览\n" +
             "function previewFile(path, name) {\n" +
             "  var ext = name.split('.').pop().toLowerCase();\n" +
             "  var isImage = ['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext) >= 0;\n" +
@@ -852,7 +852,7 @@ public class FileTransferServer extends NanoHTTPD {
                         if (!first) json.append(",");
                         first = false;
                         json.append("{");
-                        json.append("\"name\":\"手机存储\",");
+                        json.append("\"name\":\"Phone Storage\",");
                         json.append("\"path\":\"").append(escapeJson(externalStorage.getAbsolutePath())).append("\",");
                         json.append("\"isDirectory\":true,");
                         json.append("\"size\":0,");
@@ -876,7 +876,7 @@ public class FileTransferServer extends NanoHTTPD {
                                 if (!first) json.append(",");
                                 first = false;
                                 json.append("{");
-                                json.append("\"name\":\"存储空间 " + escapeJson(userDir.getName()) + "\",");
+                                json.append("\"name\":\"Storage " + escapeJson(userDir.getName()) + "\",");
                                 json.append("\"path\":\"").append(escapeJson(userDir.getAbsolutePath())).append("\",");
                                 json.append("\"isDirectory\":true,");
                                 json.append("\"size\":0,");
@@ -932,7 +932,7 @@ public class FileTransferServer extends NanoHTTPD {
                 }
                 
                 if (files != null) {
-                    // 先排序：文件夹在前，文件在后
+                    // 先排序：Folder在前，文件在后
                     java.util.List<File> fileList = new java.util.ArrayList<>();
                     for (File f : files) {
                         if (!f.isHidden()) {
@@ -1009,7 +1009,7 @@ public class FileTransferServer extends NanoHTTPD {
                                         if (!first) json.append(",");
                                         first = false;
                                         
-                                        String displayName = isRemovable ? "USB/SD卡: " + description : description;
+                                        String displayName = isRemovable ? "USB/SD Card: " + description : description;
                                         json.append("{");
                                         json.append("\"name\":\"").append(escapeJson(displayName)).append("\",");
                                         json.append("\"path\":\"").append(escapeJson(path)).append("\",");
@@ -1156,7 +1156,7 @@ public class FileTransferServer extends NanoHTTPD {
     private Response serveFile(String fileId) {
         File file = pendingFiles.get(fileId);
         
-        // 如果不在预设文件中，尝试作为路径解析
+        // 如果不在Preset Files中，尝试作为路径解析
         if (file == null) {
             file = new File(fileId);
             // 安全检查：确保文件存在且不是目录
@@ -1191,7 +1191,7 @@ public class FileTransferServer extends NanoHTTPD {
             
             return response;
         } catch (Exception e) {
-            AppLog.e(TAG, "文件传输失败: " + file.getName(), e);
+            AppLog.e(TAG, "File Transfer失败: " + file.getName(), e);
             if (callback != null) {
                 callback.onFileTransferred(file.getName(), false);
             }
@@ -1245,7 +1245,7 @@ public class FileTransferServer extends NanoHTTPD {
                     while (addresses.hasMoreElements()) {
                         InetAddress addr = addresses.nextElement();
                         String ip = addr.getHostAddress();
-                        // 只返回 IPv4 地址
+                        // 只Back IPv4 地址
                         if (!ip.contains(":") && addr instanceof Inet4Address) {
                             AppLog.i(TAG, "找到热点 IP: " + ip + " (接口: " + name + ")");
                             return ip;
@@ -1257,7 +1257,7 @@ public class FileTransferServer extends NanoHTTPD {
             AppLog.e(TAG, "获取热点 IP 失败", e);
         }
         
-        // 默认返回常见的热点地址
+        // 默认Back常见的热点地址
         return "192.168.43.1";
     }
 

@@ -68,7 +68,7 @@ public class DingTalkStreamManager {
          * @return 状态信息字符串
          */
         default String getStatusInfo() {
-            return "状态信息不可用";
+            return "Status info unavailable";
         }
         
         /**
@@ -76,7 +76,7 @@ public class DingTalkStreamManager {
          * @return 执行结果消息
          */
         default String onStartRecordingCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
         
         /**
@@ -84,7 +84,7 @@ public class DingTalkStreamManager {
          * @return 执行结果消息
          */
         default String onStopRecordingCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
         
         /**
@@ -93,7 +93,7 @@ public class DingTalkStreamManager {
          * @return 执行结果消息
          */
         default String onExitCommand(boolean confirmed) {
-            return "功能不可用";
+            return "Feature unavailable";
         }
         
         /**
@@ -101,7 +101,7 @@ public class DingTalkStreamManager {
          * @return 执行结果消息
          */
         default String onForegroundCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
         
         /**
@@ -109,7 +109,7 @@ public class DingTalkStreamManager {
          * @return 执行结果消息
          */
         default String onBackgroundCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
     }
 
@@ -506,7 +506,7 @@ public class DingTalkStreamManager {
                     AppLog.d(TAG, "收到录制指令，时长: " + durationSeconds + " 秒");
 
                     // 发送确认消息，并在发送完成后执行录制命令
-                    String confirmMsg = String.format("收到录制指令，开始录制 %d 秒视频...", durationSeconds);
+                    String confirmMsg = String.format("Record command received, starting %d sec recording...", durationSeconds);
                     String finalConversationId = conversationId;
                     String finalConversationType = conversationType;
                     String finalSenderId = senderId;
@@ -528,7 +528,7 @@ public class DingTalkStreamManager {
                     String finalConversationType = conversationType;
                     String finalSenderId = senderId;
                     
-                    sendResponseAndThen(sessionWebhook, "收到拍照指令，正在拍照...", () -> {
+                    sendResponseAndThen(sessionWebhook, "Photo command received, taking photo...", () -> {
                         // 使用 WakeUpHelper 唤醒屏幕并启动 Activity
                         // 这样可以确保在后台时也能正常拍照
                         AppLog.d(TAG, "使用 WakeUpHelper 启动拍照...");
@@ -540,11 +540,11 @@ public class DingTalkStreamManager {
                     // 状态指令：显示应用状态
                     AppLog.d(TAG, "收到状态指令");
                     String statusInfo = commandCallback != null ? 
-                            commandCallback.getStatusInfo() : "状态信息不可用";
+                            commandCallback.getStatusInfo() : "Status info unavailable";
                     sendResponse(sessionWebhook, statusInfo);
 
                 } else if ("启动录制".equals(command) || "开始录制".equals(command) || 
-                           "start".equalsIgnoreCase(command)) {
+                           "start".equalsIgnoreCase(command) || "start recording".equalsIgnoreCase(command)) {
                     // 启动录制指令：唤醒到前台并开始持续录制
                     AppLog.d(TAG, "收到启动录制指令");
                     if (commandCallback != null) {
@@ -555,7 +555,7 @@ public class DingTalkStreamManager {
                     }
 
                 } else if ("结束录制".equals(command) || "停止录制".equals(command) || 
-                           "stop".equalsIgnoreCase(command)) {
+                           "stop".equalsIgnoreCase(command) || "stop recording".equalsIgnoreCase(command)) {
                     // 结束录制指令：停止录制并退到后台
                     AppLog.d(TAG, "收到结束录制指令");
                     if (commandCallback != null) {
@@ -569,11 +569,11 @@ public class DingTalkStreamManager {
                     // 退出指令：需要二次确认
                     AppLog.d(TAG, "收到退出指令（需二次确认）");
                     sendResponse(sessionWebhook, 
-                        "⚠️ 确认要退出 EVCam 吗？\n\n" +
-                        "退出后将停止所有录制和远程服务。\n" +
-                        "发送「确认退出」执行退出操作。");
+                        "⚠️ Confirm exit EVCam?\n\n" +
+                        "All recording and remote services will be stopped.\n" +
+                        "Send \"confirm exit\" to proceed.");
 
-                } else if ("确认退出".equals(command)) {
+                } else if ("确认退出".equals(command) || "confirm exit".equalsIgnoreCase(command)) {
                     // 确认退出指令：执行退出
                     AppLog.d(TAG, "收到确认退出指令");
                     if (commandCallback != null) {
@@ -605,22 +605,22 @@ public class DingTalkStreamManager {
 
                 } else if ("帮助".equals(command) || "help".equalsIgnoreCase(command)) {
                     sendResponse(sessionWebhook,
-                        "可用指令：\n" +
-                        "• 状态 - 查看应用状态\n" +
-                        "• 前台 - 将应用切换到前台\n" +
-                        "• 后台 - 将应用切换到后台\n" +
-                        "• 启动录制 - 开始持续录制\n" +
-                        "• 结束录制 - 停止录制并退到后台\n" +
-                        "• 录制 - 录制 60 秒视频\n" +
-                        "• 录制+数字 - 录制指定秒数（如：录制30）\n" +
-                        "• 拍照 - 拍摄照片\n" +
-                        "• 退出 - 退出应用（需确认）\n" +
-                        "• 帮助 - 显示此帮助");
+                        "Available commands:\n" +
+                        "• status - View app status\n" +
+                        "• foreground - Switch app to foreground\n" +
+                        "• background - Switch app to background\n" +
+                        "• start recording - Start continuous recording\n" +
+                        "• stop recording - Stop recording\n" +
+                        "• record - Record 60 sec video\n" +
+                        "• record+number - Record specified seconds (e.g., record30)\n" +
+                        "• photo - Take a photo\n" +
+                        "• exit - Exit app (confirmation required)\n" +
+                        "• help - Show this help");
 
                 } else {
                     AppLog.d(TAG, "未识别的指令: " + command);
                     sendResponse(sessionWebhook,
-                        "未识别的指令。发送「帮助」查看可用指令。");
+                        "Unknown command. Send \"help\" to see available commands.");
                 }
 
                 return EventAckStatus.SUCCESS;

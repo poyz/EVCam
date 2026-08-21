@@ -171,7 +171,7 @@ public class AdbPermissionHelper {
     // ==================== 主流程 ====================
 
     private void doGrantAll(Callback callback) {
-        log(callback, "=== ADB 一键获取权限 ===");
+        log(callback, "=== ADB One-Click Grant Permissions ===");
 
         try {
             // 0. 先断开重连，避免 ADB 被占用
@@ -191,12 +191,12 @@ public class AdbPermissionHelper {
 
             // 3. ADB 握手
             if (!performHandshake(callback)) {
-                log(callback, "\n✗ ADB 连接握手失败");
+                log(callback, "\n✗ ADB connection handshake failed");
                 notifyComplete(callback, false);
                 return;
             }
 
-            log(callback, "✓ ADB 连接成功");
+            log(callback, "✓ ADB connection successful");
             log(callback, "");
 
             // 4. 构建并执行权限命令
@@ -204,7 +204,7 @@ public class AdbPermissionHelper {
 
             for (PermissionCommand cmd : commands) {
                 if (cancelled || socket == null || socket.isClosed()) {
-                    log(callback, "已取消");
+                    log(callback, "Cancelled");
                     break;
                 }
                 executePermissionCommand(cmd, callback);
@@ -222,24 +222,24 @@ public class AdbPermissionHelper {
 
             // 7. 输出统计
             log(callback, "");
-            log(callback, "=== 执行完成 ===");
-            log(callback, "成功: " + successCount + "  失败: " + failCount);
+            log(callback, "=== Execution Complete ===");
+            log(callback, "Success: " + successCount + "  Failed: " + failCount);
             if (failCount == 0) {
-                log(callback, "所有权限已授予，请返回查看状态");
+                log(callback, "All permissions granted, return to check status");
             } else {
-                log(callback, "部分权限授予失败，请检查上方日志");
+                log(callback, "Some permissions failed, check log above");
             }
 
             notifyComplete(callback, failCount == 0);
 
         } catch (java.net.SocketTimeoutException e) {
             log(callback, "");
-            log(callback, "✗ 连接超时");
+            log(callback, "✗ Connection timeout");
             AppLog.e(TAG, "ADB timeout", e);
             notifyComplete(callback, false);
         } catch (Exception e) {
             log(callback, "");
-            log(callback, "✗ 错误: " + e.getMessage());
+            log(callback, "✗ Error: " + e.getMessage());
             AppLog.e(TAG, "ADB grant all failed", e);
             notifyComplete(callback, false);
         } finally {
@@ -256,7 +256,7 @@ public class AdbPermissionHelper {
         closeSocket();
 
         // 2. 尝试连接后立即断开，迫使 ADB daemon 释放现有会话
-        log(callback, "重置 ADB 连接...");
+        log(callback, "Resetting ADB connection...");
         Socket probe = null;
         try {
             probe = new Socket();
@@ -265,7 +265,7 @@ public class AdbPermissionHelper {
             probe = null;
             // 等待 ADB daemon 完成清理
             Thread.sleep(800);
-            log(callback, "✓ ADB 连接已重置");
+            log(callback, "✓ ADB connection reset");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
@@ -308,7 +308,7 @@ public class AdbPermissionHelper {
             AppLog.w(TAG, "Failed to enumerate network interfaces", e);
         }
 
-        log(callback, "尝试连接 ADB (端口 " + ADB_PORT + ")...");
+        log(callback, "Attempting ADB connection (port " + ADB_PORT + ")...");
 
         IOException lastException = null;
         for (String host : hosts) {
@@ -318,7 +318,7 @@ public class AdbPermissionHelper {
                 Socket s = new Socket();
                 s.connect(new InetSocketAddress(host, ADB_PORT), CONNECT_TIMEOUT_MS);
                 s.setSoTimeout(READ_TIMEOUT_MS);
-                log(callback, "  ✓ 已连接 " + host + ":" + ADB_PORT);
+                log(callback, "  ✓ Connected " + host + ":" + ADB_PORT);
                 return s;
             } catch (IOException e) {
                 String reason = e.getMessage();
@@ -330,12 +330,12 @@ public class AdbPermissionHelper {
 
         // 所有地址都失败
         log(callback, "");
-        log(callback, "✗ 无法连接到 ADB (所有地址均失败)");
+        log(callback, "✗ Cannot connect to ADB (all addresses failed)");
         log(callback, "");
-        log(callback, "请确认：");
-        log(callback, "  1. 开发者选项中已开启 USB 调试");
-        log(callback, "  2. 通过 PC 执行: adb tcpip 5566");
-        log(callback, "  3. 设备已连接 WiFi（部分设备需要）");
+        log(callback, "Please verify:");
+        log(callback, "  1. USB debugging is enabled in Developer Options");
+        log(callback, "  2. Run on PC: adb tcpip 5566");
+        log(callback, "  3. Device is connected to WiFi (required by some devices)");
         if (lastException != null) {
             AppLog.e(TAG, "ADB connect failed (all hosts)", lastException);
         }
@@ -345,7 +345,7 @@ public class AdbPermissionHelper {
     // ==================== APK 安装流程 ====================
 
     private void doInstallApk(String apkPath, Callback callback) {
-        log(callback, "=== ADB 安装更新 ===");
+        log(callback, "=== ADB Install Update ===");
 
         try {
             // 先断开重连，避免 ADB 被占用
@@ -362,12 +362,12 @@ public class AdbPermissionHelper {
             socketOut = socket.getOutputStream();
 
             if (!performHandshake(callback)) {
-                log(callback, "\n✗ ADB 连接握手失败");
+                log(callback, "\n✗ ADB connection handshake failed");
                 notifyComplete(callback, false);
                 return;
             }
 
-            log(callback, "✓ ADB 连接成功");
+            log(callback, "✓ ADB connection successful");
             log(callback, "");
 
             // /storage/emulated/<userId>/ 是 FUSE 挂载点，跨 mount namespace 不可访问
@@ -377,9 +377,9 @@ public class AdbPermissionHelper {
                 installPath = "/data/media/" + installPath.substring("/storage/emulated/".length());
             }
 
-            log(callback, "正在安装...");
+            log(callback, "Installing...");
             log(callback, "  $ pm install -r " + installPath);
-            log(callback, "  (安装过程可能需要 30-60 秒，请耐心等待)");
+            log(callback, "  (Installation may take 30-60 seconds, please wait)");
 
             // 安装命令需要更长的超时时间
             socket.setSoTimeout(INSTALL_TIMEOUT_MS);
@@ -390,13 +390,13 @@ public class AdbPermissionHelper {
 
                 if (result.toLowerCase().contains("success")) {
                     log(callback, "");
-                    log(callback, "✓ 安装成功！");
-                    log(callback, "  应用即将自动重启...");
+                    log(callback, "✓ Installation successful!");
+                    log(callback, "  App will restart automatically...");
                     notifyComplete(callback, true);
                 } else {
                     log(callback, "");
-                    log(callback, "✗ 安装失败: " + result);
-                    log(callback, "  请尝试手动安装");
+                    log(callback, "✗ Installation failed: " + result);
+                    log(callback, "  Please try manual installation");
                     notifyComplete(callback, false);
                 }
             } finally {
@@ -405,13 +405,13 @@ public class AdbPermissionHelper {
 
         } catch (java.net.SocketTimeoutException e) {
             log(callback, "");
-            log(callback, "✗ 安装超时 (超过 120 秒)");
-            log(callback, "  请尝试手动安装");
+            log(callback, "✗ Installation timeout (over 120 seconds)");
+            log(callback, "  Please try manual installation");
             AppLog.e(TAG, "ADB install timeout", e);
             notifyComplete(callback, false);
         } catch (Exception e) {
             log(callback, "");
-            log(callback, "✗ 错误: " + e.getMessage());
+            log(callback, "✗ Error: " + e.getMessage());
             AppLog.e(TAG, "ADB install failed", e);
             notifyComplete(callback, false);
         } finally {
@@ -431,7 +431,7 @@ public class AdbPermissionHelper {
             result = (result != null) ? result.trim() : "";
 
             if (result.isEmpty()) {
-                log(callback, "  ✓ 成功");
+                log(callback, "  ✓ Success");
                 successCount++;
             } else if (isErrorResult(result)) {
                 log(callback, "  ✗ " + result);
@@ -465,7 +465,7 @@ public class AdbPermissionHelper {
 
         // 情况2: 需要认证
         if (msg.command == A_AUTH && msg.arg0 == ADB_AUTH_TOKEN) {
-            log(callback, "ADB 需要认证...");
+            log(callback, "ADB requires authentication...");
 
             // 尝试用已有密钥签名 token
             byte[] signedToken = signToken(msg.data);
@@ -476,13 +476,13 @@ public class AdbPermissionHelper {
             if (msg.command == A_CNXN) {
                 serverMaxData = msg.arg1;
                 logDeviceInfo(callback, msg.data);
-                log(callback, "✓ 认证成功（已知密钥）");
+                log(callback, "✓ Authentication successful (known key)");
                 return true;
             }
 
             // 密钥未被识别，发送公钥请求授权
             if (msg.command == A_AUTH) {
-                log(callback, "发送公钥，请在设备上确认 USB 调试授权...");
+                log(callback, "Sending public key, confirm USB debugging authorization on device...");
                 byte[] pubKeyData = getAdbPublicKeyBytes();
                 sendMessage(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, pubKeyData);
 
@@ -497,17 +497,17 @@ public class AdbPermissionHelper {
                 if (msg.command == A_CNXN) {
                     serverMaxData = msg.arg1;
                     logDeviceInfo(callback, msg.data);
-                    log(callback, "✓ 认证成功（用户已授权）");
+                    log(callback, "✓ Authentication successful (user authorized)");
                     return true;
                 }
             }
 
-            log(callback, "✗ 认证失败");
-            log(callback, "  请在设备上允许 USB 调试，或检查 ADB 安全设置");
+            log(callback, "✗ Authentication failed");
+            log(callback, "  Allow USB debugging on device, or check ADB security settings");
             return false;
         }
 
-        log(callback, "✗ 未知响应: 0x" + Integer.toHexString(msg.command));
+        log(callback, "✗ Unknown response: 0x" + Integer.toHexString(msg.command));
         return false;
     }
 
@@ -515,7 +515,7 @@ public class AdbPermissionHelper {
         if (data != null && data.length > 0) {
             String info = new String(data).replace("\0", "").trim();
             if (!info.isEmpty()) {
-                log(callback, "设备: " + info);
+                log(callback, "Device: " + info);
             }
         }
     }
@@ -541,7 +541,7 @@ public class AdbPermissionHelper {
         if (!success) {
             log(callback, "");
             log(callback, "========================================");
-            log(callback, "[INFO] 首次执行未成功，等待 3 秒后自动重试...");
+            log(callback, "[INFO] First attempt failed, retrying in 3 seconds...");
             log(callback, "========================================");
             log(callback, "");
             try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
@@ -573,16 +573,16 @@ public class AdbPermissionHelper {
                 return false;
             }
 
-            log(callback, "✓ ADB 连接成功");
+            log(callback, "✓ ADB connection successful");
             log(callback, "");
 
             String idResult = executeShellCommand("id");
             boolean alreadyRoot = (idResult != null && idResult.contains("uid=0"));
 
             if (alreadyRoot) {
-                log(callback, "[INFO] adbd 已是 root，跳过 adb root");
+                log(callback, "[INFO] adbd is already root, skipping adb root");
             } else {
-                log(callback, "[INFO] 执行 adb root ...");
+                log(callback, "[INFO] Executing adb root...");
                 closeSocket();
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ADB_HOST, ADB_PORT), CONNECT_TIMEOUT_MS);
@@ -593,7 +593,7 @@ public class AdbPermissionHelper {
                 String rootResult = executeService("root:");
                 log(callback, "[INFO]   " + rootResult);
                 closeSocket();
-                log(callback, "[INFO] 等待 adbd 以 root 身份重启...");
+                log(callback, "[INFO] Waiting for adbd to restart as root...");
                 waitForAdbd(8000);
             }
 
@@ -605,11 +605,11 @@ public class AdbPermissionHelper {
             socketOut = socket.getOutputStream();
 
             if (performHandshake(callback)) {
-                log(callback, "[INFO] 执行 adb remount ...");
+                log(callback, "[INFO] Executing adb remount...");
                 String remountResult = executeService("remount:");
                 log(callback, "[INFO]   " + remountResult);
             } else {
-                log(callback, "[WARN] remount 握手失败，继续执行脚本");
+                log(callback, "[WARN] remount handshake failed, continuing script");
             }
             closeSocket();
             log(callback, "");
@@ -630,15 +630,15 @@ public class AdbPermissionHelper {
 
             log(callback, "");
             if (success) {
-                log(callback, "✓ 脚本执行成功");
+                log(callback, "✓ Script executed successfully");
             } else {
-                log(callback, "✗ 脚本执行过程中出现错误，请检查日志");
+                log(callback, "✗ Errors occurred during script execution, check log");
             }
             return success;
 
         } catch (Exception e) {
             log(callback, "");
-            log(callback, "✗ 错误: " + e.getMessage());
+            log(callback, "✗ Error: " + e.getMessage());
             AppLog.e(TAG, "Script execution failed", e);
             return false;
         } finally {
@@ -878,7 +878,7 @@ public class AdbPermissionHelper {
     private void handleAccessibilityService(Callback callback) {
         String serviceName = packageName + "/" + packageName + ".KeepAliveAccessibilityService";
 
-        log(callback, "[无障碍服务]");
+        log(callback, "[Accessibility Service]");
 
         try {
             // 查询当前已启用的无障碍服务
@@ -888,11 +888,11 @@ public class AdbPermissionHelper {
             current = (current != null) ? current.trim() : "";
 
             String display = (current.isEmpty() || current.equals("null")) ? "(无)" : current;
-            log(callback, "  → 当前: " + display);
+            log(callback, "  → Current: " + display);
 
             // 检查是否已启用
             if (current.contains(packageName)) {
-                log(callback, "  ✓ 已启用");
+                log(callback, "  ✓ Enabled");
                 successCount++;
                 return;
             }
@@ -920,7 +920,7 @@ public class AdbPermissionHelper {
             log(callback, "  $ " + enableCmd);
             executeShellCommand(enableCmd);
 
-            log(callback, "  ✓ 成功");
+            log(callback, "  ✓ Success");
             successCount++;
 
         } catch (Exception e) {
@@ -932,7 +932,7 @@ public class AdbPermissionHelper {
     // ==================== 电池优化处理 ====================
 
     private void handleBatteryWhitelist(Callback callback) {
-        log(callback, "[电池优化白名单]");
+        log(callback, "[Battery Optimization Whitelist]");
         String cmd = "dumpsys deviceidle whitelist +" + packageName;
         log(callback, "  $ " + cmd);
 
@@ -941,7 +941,7 @@ public class AdbPermissionHelper {
             result = (result != null) ? result.trim() : "";
 
             if (result.isEmpty()) {
-                log(callback, "  ✓ 成功");
+                log(callback, "  ✓ Success");
                 successCount++;
             } else if (result.toLowerCase().contains("added") || result.toLowerCase().contains("already")) {
                 log(callback, "  ✓ " + result);

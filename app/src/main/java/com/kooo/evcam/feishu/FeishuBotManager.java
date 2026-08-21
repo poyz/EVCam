@@ -81,7 +81,7 @@ public class FeishuBotManager {
          * @return 执行结果消息
          */
         default String onForegroundCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
         
         /**
@@ -89,7 +89,7 @@ public class FeishuBotManager {
          * @return 执行结果消息
          */
         default String onBackgroundCommand() {
-            return "功能不可用";
+            return "Feature unavailable";
         }
     }
 
@@ -122,7 +122,7 @@ public class FeishuBotManager {
 
         if (appId == null || appId.isEmpty() || appSecret == null || appSecret.isEmpty()) {
             AppLog.e(TAG, "App ID 或 App Secret 未配置");
-            mainHandler.post(() -> connectionCallback.onError("App ID 或 App Secret 未配置"));
+            mainHandler.post(() -> connectionCallback.onError("App ID or App Secret not configured"));
             return;
         }
 
@@ -475,7 +475,7 @@ public class FeishuBotManager {
                 int durationSeconds = parseRecordDuration(command);
                 AppLog.d(TAG, "收到录制指令，时长: " + durationSeconds + " 秒");
 
-                String confirmMsg = String.format("收到录制指令，开始录制 %d 秒视频...", durationSeconds);
+                String confirmMsg = String.format("Record command received, starting %d sec recording...", durationSeconds);
                 sendReplyAndThen(chatId, messageId, chatType, confirmMsg, () -> {
                     WakeUpHelper.launchForRecordingFeishu(context, chatId, messageId, durationSeconds);
                 });
@@ -483,18 +483,18 @@ public class FeishuBotManager {
             } else if ("拍照".equals(command) || "photo".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到拍照指令");
 
-                sendReplyAndThen(chatId, messageId, chatType, "收到拍照指令，正在拍照...", () -> {
+                sendReplyAndThen(chatId, messageId, chatType, "Photo command received, taking photo...", () -> {
                     WakeUpHelper.launchForPhotoFeishu(context, chatId, messageId);
                 });
 
             } else if ("状态".equals(command) || "status".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到状态指令");
                 String statusInfo = currentCommandCallback != null ?
-                        currentCommandCallback.getStatusInfo() : "✅ Bot 正在运行中";
+                        currentCommandCallback.getStatusInfo() : "✅ Bot is running";
                 sendReply(chatId, messageId, chatType, statusInfo);
 
             } else if ("启动录制".equals(command) || "开始录制".equals(command) ||
-                       "start".equalsIgnoreCase(command)) {
+                       "start".equalsIgnoreCase(command) || "start recording".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到启动录制指令");
                 if (currentCommandCallback != null) {
                     String result = currentCommandCallback.onStartRecordingCommand();
@@ -504,7 +504,7 @@ public class FeishuBotManager {
                 }
 
             } else if ("结束录制".equals(command) || "停止录制".equals(command) ||
-                       "stop".equalsIgnoreCase(command)) {
+                       "stop".equalsIgnoreCase(command) || "stop recording".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到结束录制指令");
                 if (currentCommandCallback != null) {
                     String result = currentCommandCallback.onStopRecordingCommand();
@@ -516,11 +516,11 @@ public class FeishuBotManager {
             } else if ("退出".equals(command) || "exit".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到退出指令（需二次确认）");
                 sendReply(chatId, messageId, chatType,
-                    "⚠️ 确认要退出 EVCam 吗？\n\n" +
-                    "退出后将停止所有录制和远程服务。\n" +
-                    "发送「确认退出」执行退出操作。");
+                    "⚠️ Confirm exit EVCam?\n\n" +
+                    "All recording and remote services will be stopped.\n" +
+                    "Send \"confirm exit\" to proceed.");
 
-            } else if ("确认退出".equals(command)) {
+            } else if ("确认退出".equals(command) || "confirm exit".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到确认退出指令");
                 if (currentCommandCallback != null) {
                     String result = currentCommandCallback.onExitCommand(true);
@@ -551,27 +551,27 @@ public class FeishuBotManager {
 
             } else if ("帮助".equals(command) || "help".equalsIgnoreCase(command)) {
                 sendReply(chatId, messageId, chatType,
-                    "📋 EVCam 远程控制\n" +
+                    "📋 EVCam Remote Control\n" +
                     "━━━━━━━━━━━━━━\n\n" +
-                    "📹 远程录制\n" +
-                    "• 录制 - 录制60秒视频\n" +
-                    "• 录制30 - 录制30秒视频\n\n" +
-                    "▶️ 持续录制\n" +
-                    "• 启动录制 - 开始持续录制\n" +
-                    "• 结束录制 - 停止录制\n\n" +
-                    "📷 拍照\n" +
-                    "• 拍照 - 拍摄照片\n\n" +
-                    "🔄 前后台切换\n" +
-                    "• 前台 - 切换到前台\n" +
-                    "• 后台 - 切换到后台\n\n" +
-                    "ℹ️ 其他\n" +
-                    "• 状态 - 查看应用状态\n" +
-                    "• 退出 - 退出应用\n" +
-                    "• 帮助 - 显示此帮助");
+                    "📹 Remote Recording\n" +
+                    "• record - Record 60 sec video\n" +
+                    "• record30 - Record 30 sec video\n\n" +
+                    "▶️ Continuous Recording\n" +
+                    "• start recording - Start continuous recording\n" +
+                    "• stop recording - Stop recording\n\n" +
+                    "📷 Photo\n" +
+                    "• photo - Take a photo\n\n" +
+                    "🔄 Foreground/Background\n" +
+                    "• foreground - Switch to foreground\n" +
+                    "• background - Switch to background\n\n" +
+                    "ℹ️ Other\n" +
+                    "• status - View app status\n" +
+                    "• exit - Exit app\n" +
+                    "• help - Show this help");
 
             } else {
                 AppLog.d(TAG, "未识别的指令: " + command);
-                sendReply(chatId, messageId, chatType, "未识别的指令。发送「帮助」查看可用指令。");
+                sendReply(chatId, messageId, chatType, "Unknown command. Send \"help\" to see available commands.");
             }
 
         } catch (Exception e) {
