@@ -16,7 +16,7 @@ import java.io.OutputStream;
  * 2. ecarx_str_policies.xml - Ecarx STR 白名单
  * 3. bgms_config.xml - BGMS 后台管理白名单
  * 
- * 通过 ADB TCP 协议（localhost:5555）执行，与"一键获取权限"使用相同的通道。
+ * 通过 ADB TCP 协议（localhost:5566）执行，与"一键获取权限"使用相同的通道。
  */
 public class SystemWhitelistHelper {
 

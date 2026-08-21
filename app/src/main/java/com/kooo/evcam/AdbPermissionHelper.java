@@ -34,10 +34,10 @@ import java.util.concurrent.Executors;
 
 /**
  * ADB 权限授予助手
- * 通过 ADB TCP 协议连接 localhost:5555，自动授予所有需要的权限。
+ * 通过 ADB TCP 协议连接 localhost:5566，自动授予所有需要的权限。
  *
  * 工作原理：
- * 1. 通过 TCP 连接到设备本地的 ADB 守护进程 (端口 5555)
+ * 1. 通过 TCP 连接到设备本地的 ADB 守护进程 (端口 5566)
  * 2. 使用 ADB 协议进行握手（支持认证）
  * 3. 以 shell 用户身份执行 pm grant / appops / settings 等命令
  * 4. 通过回调报告执行进度和结果
@@ -62,7 +62,7 @@ public class AdbPermissionHelper {
 
     // 连接参数
     private static final String ADB_HOST = "127.0.0.1";
-    private static final int ADB_PORT = 5555;
+    private static final int ADB_PORT = 5566;
     private static final int CONNECT_TIMEOUT_MS = 5000;
     private static final int READ_TIMEOUT_MS = 10000;
     private static final int AUTH_ACCEPT_TIMEOUT_MS = 30000;
@@ -334,7 +334,7 @@ public class AdbPermissionHelper {
         log(callback, "");
         log(callback, "请确认：");
         log(callback, "  1. 开发者选项中已开启 USB 调试");
-        log(callback, "  2. 通过 PC 执行: adb tcpip 5555");
+        log(callback, "  2. 通过 PC 执行: adb tcpip 5566");
         log(callback, "  3. 设备已连接 WiFi（部分设备需要）");
         if (lastException != null) {
             AppLog.e(TAG, "ADB connect failed (all hosts)", lastException);
